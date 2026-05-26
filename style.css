@@ -1,0 +1,409 @@
+/* 全局样式 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+}
+
+/* 游戏容器 */
+.game-container {
+  min-height: 100vh;
+  min-height: 100dvh; /* 使用动态视口高度，适配移动端浏览器 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* 改为顶部对齐 */
+  padding: 8px;
+  overflow-y: auto;
+}
+
+/* 头部 */
+.header-wrapper {
+  width: 100%;
+  max-width: 800px;
+  margin-bottom: 12px;
+}
+
+.header {
+  background: white;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* 游戏信息 */
+.game-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.info-item {
+  text-align: center;
+}
+
+.info-label {
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 2px;
+}
+
+.info-value {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.level-value {
+  color: #764ba2;
+}
+
+.score-value {
+  color: #22c55e;
+}
+
+.time-value {
+  color: #3b82f6;
+}
+
+.time-warning {
+  color: #ef4444 !important;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* 进度条 */
+.progress-wrapper {
+  flex: 1;
+  min-width: 120px;
+}
+
+.progress-bg {
+  width: 100%;
+  background: #e5e7eb;
+  border-radius: 999px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background: linear-gradient(90deg, #22c55e, #14b8a6);
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s;
+  width: 0%;
+}
+
+/* 按钮 */
+.btn-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+}
+
+.btn-secondary {
+  background: #6b7280;
+  color: white;
+}
+
+.btn-warning {
+  background: #f97316;
+  color: white;
+}
+
+.hint-count {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+/* 棋盘 */
+.board-wrapper {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  overflow-x: auto; /* 允许横向滚动 */
+  -webkit-overflow-scrolling: touch; /* iOS 平滑滚动 */
+}
+
+.board {
+  display: grid;
+  gap: 6px;
+}
+
+.path-svg {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* 格子 */
+.cell {
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+  transition: all 0.2s;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent; /* 移除移动端点击高亮 */
+}
+
+.cell-active {
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #cbd5e1;
+  cursor: pointer;
+}
+
+.cell-active:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.cell-selected {
+  box-shadow: 0 0 0 3px #764ba2, 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+  transform: scale(1.05);
+}
+
+.cell-hint {
+  box-shadow: 0 0 0 3px #fbbf24, 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+  animation: hint-pulse 0.5s ease-in-out 3;
+}
+
+@keyframes hint-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* 弹窗 */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 16px;
+}
+
+.modal-show {
+  display: flex;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 100%;
+  max-width: 360px;
+  margin: 0;
+}
+
+.modal-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.modal-desc {
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.modal-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* 响应式 - 平板和小型桌面 */
+@media (max-width: 768px) {
+  .game-container {
+    padding: 6px;
+  }
+  
+  .header-wrapper {
+    margin-bottom: 8px;
+  }
+  
+  .header {
+    padding: 10px;
+  }
+  
+  .header-content {
+    gap: 8px;
+  }
+  
+  .game-info {
+    gap: 12px;
+  }
+  
+  .info-label {
+    font-size: 10px;
+  }
+  
+  .info-value {
+    font-size: 18px;
+  }
+  
+  .board-wrapper {
+    padding: 12px;
+  }
+  
+  .btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+}
+
+/* 响应式 - 手机 */
+@media (max-width: 480px) {
+  .game-container {
+    padding: 4px;
+  }
+  
+  .header {
+    padding: 8px;
+    border-radius: 8px;
+  }
+  
+  .header-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .game-info {
+    justify-content: space-around;
+    gap: 8px;
+  }
+  
+  .info-item {
+    flex: 1;
+  }
+  
+  .info-label {
+    font-size: 9px;
+    margin-bottom: 1px;
+  }
+  
+  .info-value {
+    font-size: 16px;
+  }
+  
+  .progress-wrapper {
+    min-width: 100%;
+  }
+  
+  .progress-bg {
+    height: 8px;
+  }
+  
+  .btn-group {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .btn {
+    flex: 1;
+    min-width: 80px;
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+  
+  .board-wrapper {
+    padding: 8px;
+    border-radius: 8px;
+  }
+  
+  .path-svg {
+    top: 8px;
+    left: 8px;
+  }
+  
+  .modal-content {
+    padding: 20px;
+  }
+  
+  .modal-icon {
+    font-size: 40px;
+  }
+  
+  .modal-title {
+    font-size: 18px;
+  }
+  
+  .modal-desc {
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+  
+  .modal-btns {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .modal-btns .btn {
+    width: 100%;
+  }
+}
