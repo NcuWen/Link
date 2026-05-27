@@ -188,13 +188,23 @@ function renderGame(container, game) {
     // 设置棋盘网格
     boardEl.style.gridTemplateColumns = `repeat(${cols}, ${cellSize}px)`;
     
-    // 设置 SVG 大小
+    // 设置 SVG 大小和位置
     const boardWidth = cols * cellSize + (cols - 1) * gap;
     const boardHeight = rows * cellSize + (rows - 1) * gap;
     pathSvg.setAttribute('width', String(boardWidth));
     pathSvg.setAttribute('height', String(boardHeight));
     pathSvg.style.width = `${boardWidth}px`;
     pathSvg.style.height = `${boardHeight}px`;
+    
+    // 计算棋盘在 board-wrapper 中的实际位置（考虑居中）
+    if (boardWrapper) {
+      const wrapperWidth = boardWrapper.clientWidth - 10; // 减去 padding
+      const wrapperHeight = boardWrapper.clientHeight - 10;
+      const offsetX = (wrapperWidth - boardWidth) / 2;
+      const offsetY = (wrapperHeight - boardHeight) / 2;
+      pathSvg.style.left = `${5 + offsetX}px`;
+      pathSvg.style.top = `${5 + offsetY}px`;
+    }
     
     boardEl.innerHTML = '';
     
@@ -294,7 +304,7 @@ function renderGame(container, game) {
     
     if (path.length < 2) return;
     
-    // 转换坐标
+    // 转换坐标（每个格子的中心点）
     const points = path.map(p => ({
       x: p.col * (cellSize + gap) + cellSize / 2,
       y: p.row * (cellSize + gap) + cellSize / 2
@@ -312,6 +322,7 @@ function renderGame(container, game) {
     pathEl.setAttribute('stroke-width', '4');
     pathEl.setAttribute('stroke-linecap', 'round');
     pathEl.setAttribute('stroke-linejoin', 'round');
+    pathEl.setAttribute('stroke-opacity', '0.8');
     
     pathSvg.appendChild(pathEl);
     

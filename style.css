@@ -184,9 +184,6 @@ body {
 
 .path-svg {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 100;
 }
@@ -382,8 +379,7 @@ body {
   }
   
   .path-svg {
-    top: 6px;
-    left: 6px;
+    /* 位置由 JavaScript 动态计算 */
   }
   
   .modal-content {
