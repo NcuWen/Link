@@ -21,8 +21,8 @@ function initApp() {
 
   // 创建游戏实例
   const game = new LinkGame({
-    rows: 8,
-    cols: 10,
+    rows: 10,  // 10行（纵向更长）
+    cols: 8,   // 8列
     timeLimit: 180,
     hints: 3
   });
@@ -129,17 +129,36 @@ function renderGame(container, game) {
   function calculateCellSize() {
     const screenWidth = window.innerWidth;
     const cols = game.config.cols;
+    const rows = game.config.rows;
     
-    // 移动端：根据屏幕宽度计算，留出边距
+    // 获取 board-wrapper 的实际宽度（减去 padding）
+    const boardWrapper = document.querySelector('.board-wrapper');
+    const wrapperPadding = 16; // board-wrapper 的 padding
+    const availableWidth = boardWrapper ? boardWrapper.clientWidth - wrapperPadding * 2 : screenWidth - 32;
+    
+    // 计算可用高度（屏幕高度减去头部和其他元素）
+    const headerHeight = 120; // 头部大约高度
+    const availableHeight = window.innerHeight - headerHeight - 32; // 减去其他边距
+    
+    // 根据宽度计算格子大小
+    const cellSizeByWidth = Math.floor((availableWidth - (cols - 1) * 6) / cols);
+    
+    // 根据高度计算格子大小
+    const cellSizeByHeight = Math.floor((availableHeight - (rows - 1) * 6) / rows);
+    
+    // 取较小值，确保棋盘在宽度和高度上都能适应
+    let cellSize = Math.min(cellSizeByWidth, cellSizeByHeight);
+    
+    // 移动端：根据屏幕宽度计算
     if (screenWidth <= 768) {
-      // 移动端：棋盘宽度占屏幕的 90%，减去内边距
-      const availableWidth = screenWidth * 0.9 - 48; // 减去 board-wrapper 的 padding
-      const cellSize = Math.floor((availableWidth - (cols - 1) * 6) / cols);
-      return Math.min(cellSize, 40); // 最大不超过40px
+      // 最大不超过45px，最小不低于28px
+      cellSize = Math.max(28, Math.min(cellSize, 45));
+    } else {
+      // 桌面端：最大不超过50px
+      cellSize = Math.max(35, Math.min(cellSize, 50));
     }
     
-    // 桌面端：固定大小
-    return 44;
+    return cellSize;
   }
   
   let cellSize = calculateCellSize();
@@ -164,6 +183,7 @@ function renderGame(container, game) {
     
     const rows = board.length;
     const cols = board[0].length;
+    const boardWrapper = document.querySelector('.board-wrapper');
     
     // 设置棋盘网格
     boardEl.style.gridTemplateColumns = `repeat(${cols}, ${cellSize}px)`;

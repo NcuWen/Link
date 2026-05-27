@@ -164,24 +164,28 @@ body {
 .board-wrapper {
   background: white;
   border-radius: 12px;
-  padding: 16px;
+  padding: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   position: relative;
   width: 100%;
   max-width: 800px;
-  overflow-x: auto; /* 允许横向滚动 */
-  -webkit-overflow-scrolling: touch; /* iOS 平滑滚动 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .board {
   display: grid;
   gap: 6px;
+  margin: 0 auto; /* 棋盘居中 */
+  justify-content: center; /* 网格内容居中 */
 }
 
 .path-svg {
   position: absolute;
-  top: 16px;
-  left: 16px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 100;
 }
@@ -307,7 +311,7 @@ body {
   }
   
   .board-wrapper {
-    padding: 12px;
+    padding: 8px;
   }
   
   .btn {
@@ -372,13 +376,13 @@ body {
   }
   
   .board-wrapper {
-    padding: 8px;
+    padding: 6px;
     border-radius: 8px;
   }
   
   .path-svg {
-    top: 8px;
-    left: 8px;
+    top: 6px;
+    left: 6px;
   }
   
   .modal-content {
