@@ -67,6 +67,9 @@ class LinkGame {
     // 根据关卡调整难度
     const patterns = Math.min(8 + level * 2, PATTERNS.length);
     
+    // 根据关卡增加时间（基础时间180秒，每关增加20秒）
+    const timeLimit = this.config.timeLimit + (level - 1) * 20;
+    
     // 生成棋盘
     const board = this.generateBoard(patterns);
     const totalPairs = (this.config.rows * this.config.cols) / 2;
@@ -75,7 +78,7 @@ class LinkGame {
       board,
       selected: null,
       score: 0,
-      time: this.config.timeLimit,
+      time: timeLimit,
       hints: this.config.hints,
       isPlaying: true,
       isWin: false,

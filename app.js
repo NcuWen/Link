@@ -133,7 +133,7 @@ function renderGame(container, game) {
     
     // 获取 board-wrapper 的实际宽度（减去 padding）
     const boardWrapper = document.querySelector('.board-wrapper');
-    const wrapperPadding = 16; // board-wrapper 的 padding
+    const wrapperPadding = 5; // board-wrapper 的 padding
     const availableWidth = boardWrapper ? boardWrapper.clientWidth - wrapperPadding * 2 : screenWidth - 32;
     
     // 计算可用高度（屏幕高度减去头部和其他元素）
@@ -141,28 +141,28 @@ function renderGame(container, game) {
     const availableHeight = window.innerHeight - headerHeight - 32; // 减去其他边距
     
     // 根据宽度计算格子大小
-    const cellSizeByWidth = Math.floor((availableWidth - (cols - 1) * 6) / cols);
+    const cellSizeByWidth = Math.floor((availableWidth - (cols - 1) * 2) / cols);
     
     // 根据高度计算格子大小
-    const cellSizeByHeight = Math.floor((availableHeight - (rows - 1) * 6) / rows);
+    const cellSizeByHeight = Math.floor((availableHeight - (rows - 1) * 2) / rows);
     
     // 取较小值，确保棋盘在宽度和高度上都能适应
     let cellSize = Math.min(cellSizeByWidth, cellSizeByHeight);
     
     // 移动端：根据屏幕宽度计算
     if (screenWidth <= 768) {
-      // 最大不超过45px，最小不低于28px
-      cellSize = Math.max(28, Math.min(cellSize, 45));
+      // 最大不超过65px，最小不低于28px
+      cellSize = Math.max(28, Math.min(cellSize, 65));
     } else {
-      // 桌面端：最大不超过50px
-      cellSize = Math.max(35, Math.min(cellSize, 50));
+      // 桌面端：最大不超过75px
+      cellSize = Math.max(35, Math.min(cellSize, 75));
     }
     
     return cellSize;
   }
   
   let cellSize = calculateCellSize();
-  const gap = 6;
+  const gap = 2; // 与 CSS 中的 gap 保持一致
   
   // 窗口大小变化时重新计算
   window.addEventListener('resize', () => {
