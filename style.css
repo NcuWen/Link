@@ -14,25 +14,27 @@ body {
 /* 游戏容器 */
 .game-container {
   min-height: 100vh;
+  min-height: 100dvh; /* 使用动态视口高度，适配移动端浏览器 */
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 16px;
+  justify-content: flex-start; /* 改为顶部对齐 */
+  padding: 8px;
+  overflow-y: auto;
 }
 
 /* 头部 */
 .header-wrapper {
   width: 100%;
   max-width: 800px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .header {
   background: white;
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .header-content {
@@ -40,14 +42,14 @@ body {
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 12px;
 }
 
 /* 游戏信息 */
 .game-info {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 16px;
 }
 
 .info-item {
@@ -55,13 +57,13 @@ body {
 }
 
 .info-label {
-  font-size: 12px;
+  font-size: 11px;
   color: #666;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .info-value {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
 }
 
@@ -90,14 +92,14 @@ body {
 /* 进度条 */
 .progress-wrapper {
   flex: 1;
-  min-width: 150px;
+  min-width: 120px;
 }
 
 .progress-bg {
   width: 100%;
   background: #e5e7eb;
   border-radius: 999px;
-  height: 12px;
+  height: 10px;
   overflow: hidden;
 }
 
@@ -113,17 +115,18 @@ body {
 .btn-group {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .btn {
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 6px 12px;
+  border-radius: 6px;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 13px;
   border: none;
   cursor: pointer;
   transition: all 0.2s;
+  white-space: nowrap;
 }
 
 .btn:hover {
@@ -160,34 +163,43 @@ body {
 /* 棋盘 */
 .board-wrapper {
   background: white;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   position: relative;
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .board {
   display: grid;
   gap: 6px;
+  margin: 0 auto; /* 棋盘居中 */
+  justify-content: center; /* 网格内容居中 */
 }
 
 .path-svg {
   position: absolute;
-  top: 24px;
-  left: 24px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 100;
 }
 
 /* 格子 */
 .cell {
-  border-radius: 8px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: default;
   transition: all 0.2s;
   user-select: none;
+  -webkit-tap-highlight-color: transparent; /* 移除移动端点击高亮 */
 }
 
 .cell-active {
@@ -226,6 +238,7 @@ body {
   align-items: center;
   justify-content: center;
   z-index: 200;
+  padding: 16px;
 }
 
 .modal-show {
@@ -234,52 +247,167 @@ body {
 
 .modal-content {
   background: white;
-  border-radius: 16px;
-  padding: 32px;
+  border-radius: 12px;
+  padding: 24px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
   text-align: center;
-  max-width: 400px;
-  margin: 16px;
+  width: 100%;
+  max-width: 360px;
+  margin: 0;
 }
 
 .modal-icon {
-  font-size: 64px;
-  margin-bottom: 16px;
+  font-size: 48px;
+  margin-bottom: 12px;
 }
 
 .modal-title {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
   margin-bottom: 8px;
 }
 
 .modal-desc {
   color: #666;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
+  font-size: 14px;
 }
 
 .modal-btns {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
-/* 响应式 */
-@media (max-width: 600px) {
+/* 响应式 - 平板和小型桌面 */
+@media (max-width: 768px) {
+  .game-container {
+    padding: 6px;
+  }
+  
+  .header-wrapper {
+    margin-bottom: 8px;
+  }
+  
+  .header {
+    padding: 10px;
+  }
+  
   .header-content {
-    flex-direction: column;
-    align-items: stretch;
+    gap: 8px;
   }
   
   .game-info {
-    justify-content: center;
+    gap: 12px;
+  }
+  
+  .info-label {
+    font-size: 10px;
+  }
+  
+  .info-value {
+    font-size: 18px;
+  }
+  
+  .board-wrapper {
+    padding: 8px;
+  }
+  
+  .btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+}
+
+/* 响应式 - 手机 */
+@media (max-width: 480px) {
+  .game-container {
+    padding: 4px;
+  }
+  
+  .header {
+    padding: 8px;
+    border-radius: 8px;
+  }
+  
+  .header-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .game-info {
+    justify-content: space-around;
+    gap: 8px;
+  }
+  
+  .info-item {
+    flex: 1;
+  }
+  
+  .info-label {
+    font-size: 9px;
+    margin-bottom: 1px;
+  }
+  
+  .info-value {
+    font-size: 16px;
+  }
+  
+  .progress-wrapper {
+    min-width: 100%;
+  }
+  
+  .progress-bg {
+    height: 8px;
   }
   
   .btn-group {
     justify-content: center;
+    flex-wrap: wrap;
   }
   
-  .info-value {
-    font-size: 20px;
+  .btn {
+    flex: 1;
+    min-width: 80px;
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+  
+  .board-wrapper {
+    padding: 6px;
+    border-radius: 8px;
+  }
+  
+  .path-svg {
+    top: 6px;
+    left: 6px;
+  }
+  
+  .modal-content {
+    padding: 20px;
+  }
+  
+  .modal-icon {
+    font-size: 40px;
+  }
+  
+  .modal-title {
+    font-size: 18px;
+  }
+  
+  .modal-desc {
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+  
+  .modal-btns {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .modal-btns .btn {
+    width: 100%;
   }
 }

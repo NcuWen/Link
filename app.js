@@ -2,6 +2,16 @@
  * 游戏UI渲染
  */
 
+/* global PATTERNS */  // PATTERNS 在 main.js 中定义
+
+// 将数字索引转换为 emoji
+function getPatternEmoji(idx) {
+  if (typeof PATTERNS !== 'undefined' && PATTERNS[idx]) {
+    return PATTERNS[idx];
+  }
+  return '?';
+}
+
 function initApp() {
   const app = document.getElementById('app');
   if (!app) {
@@ -11,8 +21,8 @@ function initApp() {
 
   // 创建游戏实例
   const game = new LinkGame({
-    rows: 8,
-    cols: 10,
+    rows: 10,  // 10行（纵向更长）
+    cols: 8,   // 8列
     timeLimit: 180,
     hints: 3
   });
@@ -115,9 +125,53 @@ function renderGame(container, game) {
   const shuffleBtn = document.getElementById('shuffle-btn');
   const restartBtn = document.getElementById('restart-btn');
 
-  // 格子大小
-  const cellSize = 44;
+  // 格子大小 - 根据屏幕宽度动态计算
+  function calculateCellSize() {
+    const screenWidth = window.innerWidth;
+    const cols = game.config.cols;
+    const rows = game.config.rows;
+    
+    // 获取 board-wrapper 的实际宽度（减去 padding）
+    const boardWrapper = document.querySelector('.board-wrapper');
+    const wrapperPadding = 16; // board-wrapper 的 padding
+    const availableWidth = boardWrapper ? boardWrapper.clientWidth - wrapperPadding * 2 : screenWidth - 32;
+    
+    // 计算可用高度（屏幕高度减去头部和其他元素）
+    const headerHeight = 120; // 头部大约高度
+    const availableHeight = window.innerHeight - headerHeight - 32; // 减去其他边距
+    
+    // 根据宽度计算格子大小
+    const cellSizeByWidth = Math.floor((availableWidth - (cols - 1) * 6) / cols);
+    
+    // 根据高度计算格子大小
+    const cellSizeByHeight = Math.floor((availableHeight - (rows - 1) * 6) / rows);
+    
+    // 取较小值，确保棋盘在宽度和高度上都能适应
+    let cellSize = Math.min(cellSizeByWidth, cellSizeByHeight);
+    
+    // 移动端：根据屏幕宽度计算
+    if (screenWidth <= 768) {
+      // 最大不超过45px，最小不低于28px
+      cellSize = Math.max(28, Math.min(cellSize, 45));
+    } else {
+      // 桌面端：最大不超过50px
+      cellSize = Math.max(35, Math.min(cellSize, 50));
+    }
+    
+    return cellSize;
+  }
+  
+  let cellSize = calculateCellSize();
   const gap = 6;
+  
+  // 窗口大小变化时重新计算
+  window.addEventListener('resize', () => {
+    cellSize = calculateCellSize();
+    const state = game.getState();
+    if (state.board.length) {
+      renderBoard(state);
+    }
+  });
 
   /**
    * 渲染棋盘
@@ -129,6 +183,7 @@ function renderGame(container, game) {
     
     const rows = board.length;
     const cols = board[0].length;
+    const boardWrapper = document.querySelector('.board-wrapper');
     
     // 设置棋盘网格
     boardEl.style.gridTemplateColumns = `repeat(${cols}, ${cellSize}px)`;
@@ -149,19 +204,50 @@ function renderGame(container, game) {
         const pattern = board[r][c];
         const isSelected = selected && selected.row === r && selected.col === c;
         
-        cell.className = 'cell' + (pattern ? ' cell-active' : '') + (isSelected ? ' cell-selected' : '');
+        // 使用 pattern !== null 而不是 pattern，因为 0 也是有效的图案索引
+        const hasPattern = pattern !== null && pattern !== undefined;
+        cell.className = 'cell' + (hasPattern ? ' cell-active' : '') + (isSelected ? ' cell-selected' : '');
         cell.style.width = `${cellSize}px`;
         cell.style.height = `${cellSize}px`;
         cell.style.fontSize = `${cellSize * 0.55}px`;
         
-        if (pattern) {
-          cell.textContent = pattern;
+        if (hasPattern) {
+          cell.textContent = getPatternEmoji(pattern);  // 将数字索引转换为 emoji 显示
           cell.dataset.row = String(r);
           cell.dataset.col = String(c);
           
-          cell.addEventListener('click', () => {
+          // 移动端使用 touchend，桌面端使用 click，避免同时触发
+          const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+          
+          let isProcessing = false;
+          
+          const handleInteraction = (e) => {
+            // 防止默认行为和冒泡
+            if (e) {
+              e.preventDefault();
+              e.stopPropagation();
+            }
+            
+            // 防止快速重复触发
+            if (isProcessing || game.state.showingPath) return;
+            isProcessing = true;
+            
             game.click(r, c);
-          });
+            
+            // 短暂延迟后重置状态
+            setTimeout(() => {
+              isProcessing = false;
+            }, 300);  // 增加到300ms，确保路径显示完成
+          };
+          
+          // 根据设备类型添加对应的事件监听器
+          if (isMobile) {
+            // 移动端：只使用 touchend，阻止 click 事件
+            cell.addEventListener('touchend', handleInteraction, { passive: false });
+          } else {
+            // 桌面端：只使用 click
+            cell.addEventListener('click', handleInteraction);
+          }
         }
         
         boardEl.appendChild(cell);
@@ -288,32 +374,55 @@ function renderGame(container, game) {
   game.onState(updateUI);
   game.onPath(drawPath);
 
+  // 辅助函数：根据设备类型添加事件监听器
+  function addTouchClick(btn, handler) {
+    let isProcessing = false;
+    const handle = (e) => {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      if (isProcessing) return;
+      isProcessing = true;
+      handler();
+      setTimeout(() => { isProcessing = false; }, 300);
+    };
+    
+    // 根据设备类型选择事件
+    const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    if (isMobile) {
+      btn.addEventListener('touchend', handle, { passive: false });
+    } else {
+      btn.addEventListener('click', handle);
+    }
+  }
+
   // 提示按钮
-  hintBtn.addEventListener('click', () => {
+  addTouchClick(hintBtn, () => {
     const hint = game.useHint();
     showHint(hint);
   });
 
   // 重排按钮
-  shuffleBtn.addEventListener('click', () => {
+  addTouchClick(shuffleBtn, () => {
     game.reshuffle();
   });
 
   // 重开按钮
-  restartBtn.addEventListener('click', () => {
+  addTouchClick(restartBtn, () => {
     hideModal();
     game.init(1);
   });
 
   // 下一关按钮
-  modalNext.addEventListener('click', () => {
+  addTouchClick(modalNext, () => {
     hideModal();
     const currentState = game.getState();
     game.init(currentState.level + 1);
   });
 
   // 弹窗重开按钮
-  modalRestart.addEventListener('click', () => {
+  addTouchClick(modalRestart, () => {
     hideModal();
     game.init(1);
   });
